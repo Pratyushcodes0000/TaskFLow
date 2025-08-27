@@ -1,0 +1,621 @@
+.dashboard-container {
+  padding: 2rem;
+  padding-top: 5rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 0.50rem;
+  padding: 0.50rem;
+  overflow-x: auto;
+  min-height: calc(100vh - 200px);
+}
+
+.kanban-column {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-width: 300px;
+  width: 430px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.column-header h2 {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.add-task-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.add-task-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.add-task-button svg {
+  font-size: 0.8rem;
+}
+
+.column-content {
+  flex: 1;
+  min-height: 100px;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.column-content.dragging-over {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.task-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
+  cursor: grab;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.task-card.dragging {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02) rotate(1deg);
+  z-index: 1000;
+  cursor: grabbing;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.task-card:active {
+  cursor: grabbing;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.task-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.task-description {
+  font-size: 0.85rem;
+  color: #e0e0e0;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.task-assignee {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b0b0b0;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+}
+
+.task-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.task-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(100, 108, 255, 0.2);
+  color: #646cff;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.task-tag:hover {
+  background: rgba(100, 108, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: rgba(45, 45, 45, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.875rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #201e1e;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(45, 45, 45, 0.8);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-group select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.form-group select option {
+  background: rgba(45, 45, 45, 0.95);
+  color: #fff;
+  padding: 0.5rem;
+}
+
+.form-group select option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.modal-actions button {
+  padding: 0.875rem 1.75rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-actions button[type="button"] {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-actions button[type="submit"] {
+  background: linear-gradient(135deg, #646cff 0%, #535bf2 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
+}
+
+.modal-actions button:hover {
+  transform: translateY(-2px);
+}
+
+.modal-actions button[type="button"]:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.modal-actions button[type="submit"]:hover {
+  box-shadow: 0 6px 16px rgba(100, 108, 255, 0.4);
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.tag-option {
+  background: rgba(255, 255, 255, 0.1);
+  color: #b0b0b0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.6rem 1.25rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tag-option:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.tag-option.selected {
+  background: linear-gradient(135deg, #646cff 0%, #535bf2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
+}
+
+.tag-option.selected:hover {
+  box-shadow: 0 6px 16px rgba(100, 108, 255, 0.4);
+}
+
+/* Task Details Modal Styles */
+.task-details-modal {
+  background: rgba(45, 45, 45, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+  color: #ffffff;
+}
+
+.close-button {
+  color: #b0b0b0;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.detail-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-section h3 {
+  color: #ffffff;
+}
+
+.detail-section p {
+  color: #b0b0b0;
+}
+
+/* Add styles for the draggable wrapper */
+.column-content > div > div {
+  position: relative;
+  width: 100%;
+  transform-origin: 0 0;
+}
+
+/* Add styles for the droppable area */
+.column-content > div {
+  min-height: 100px;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.column-content > div.dragging-over {
+  background: rgba(100, 108, 255, 0.1);
+  border: 2px dashed #646cff;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .kanban-board {
+      grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+      padding: 1rem;
+      padding-top: 5rem;
+  }
+
+  .kanban-board {
+      grid-template-columns: 1fr;
+      height: auto;
+  }
+
+  .kanban-column {
+      min-width: auto;
+  }
+
+  .modal-content {
+      width: 95%;
+      padding: 1.5rem;
+  }
+}
+
+.task-actions {
+  position: relative;
+}
+
+.task-actions button {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.task-actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.task-actions .dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 0.5rem;
+  min-width: 160px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  margin-top: 0.5rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.task-actions .dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.task-actions .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #e0e0e0;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.task-actions .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.task-actions .dropdown-item svg {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.task-actions .dropdown-item.delete {
+  color: #ff4d4d;
+}
+
+.task-actions .dropdown-item.delete:hover {
+  background: rgba(255, 77, 77, 0.1);
+}
+
+.task-actions .dropdown-item.start {
+  color: #4caf50;
+}
+
+.task-actions .dropdown-item.start:hover {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.task-actions .dropdown-item.end {
+  color: #2196f3;
+}
+
+.task-actions .dropdown-item.end:hover {
+  background: rgba(33, 150, 243, 0.1);
+}
+
+/* Add a small arrow at the top of the dropdown */
+.task-actions .dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  background: rgba(30, 30, 30, 0.95);
+  transform: rotate(45deg);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Add a divider between items */
+.task-actions .dropdown-item:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 0.25rem;
+}
+
+/* Add hover effect for the three dots button */
+.task-actions button:hover {
+  transform: scale(1.1);
+}
+
+/* Add active state for the three dots button */
+.task-actions button.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #646cff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.retry-button {
+  background-color: #646cff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #535bf2;
+}
